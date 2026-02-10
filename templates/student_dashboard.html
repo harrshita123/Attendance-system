@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <h2>Welcome, {{ session.student_name }}</h2>
+            <p>Student Dashboard</p>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ stats.total_classes or 0 }}</h3>
+            <p>Total Classes</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ stats.present_classes or 0 }}</h3>
+            <p>Classes Present</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ stats.attendance_percentage or 0 }}%</h3>
+            <p>Attendance Percentage</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ student.class_name or 'N/A' }}</h3>
+            <p>Class</p>
+        </div>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <h3>Recent Attendance</h3>
+        <a href="{{ url_for('view_attendance') }}" class="btn btn-secondary btn-sm">View Full Attendance</a>
+    </div>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in recent_attendance %}
+                <tr>
+                    <td>{{ attendance.date }}</td>
+                    <td>{{ attendance.class_name }}</td>
+                    <td>{{ attendance.subject or 'N/A' }}</td>
+                    <td>
+                        {% if attendance.status == 'present' %}
+                            <span class="status-present">Present</span>
+                        {% elif attendance.status == 'absent' %}
+                            <span class="status-absent">Absent</span>
+                        {% else %}
+                            <span class="status-late">Late</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if not recent_attendance %}
+    <div class="alert alert-info">
+        No attendance records found yet.
+    </div>
+    {% endif %}
+    
+    <div class="attendance-info" style="margin-top: 30px; padding: 20px; background: #f3f4f6; border-radius: 8px;">
+        <h4>Student Information</h4>
+        <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+        <p><strong>Name:</strong> {{ student.name }}</p>
+        <p><strong>Class:</strong> {{ student.class_name or 'Not assigned' }}</p>
+        {% if student.email %}
+        <p><strong>Email:</strong> {{ student.email }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <h2>Welcome, {{ session.teacher_name }}</h2>
+            <p>Teacher Dashboard</p>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+    
+    <h3>Today's Attendance Summary</h3>
+    
+    <div class="stats-grid">
+        {% for summary in attendance_summary %}
+        <div class="stat-card">
+            <h3>{{ summary.attendance_rate }}%</h3>
+            <p>{{ summary.class.name }}</p>
+            <small>{{ summary.present_today }}/{{ summary.total_students }} Present</small>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <h3>Your Classes</h3>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Subject</th>
+                    <th>Total Students</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in classes %}
+                <tr>
+                    <td>{{ class.name }}</td>
+                    <td>{{ class.subject or 'N/A' }}</td>
+                    <td>
+                        {% set total_students = attendance_summary 
+                           | selectattr('class.id', 'equalto', class.id) 
+                           | map(attribute='total_students') 
+                           | first or 0 %}
+                        {{ total_students }}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('mark_attendance', class_id=class.id) }}" 
+                           class="btn btn-primary btn-sm">Mark Attendance</a>
+                        <a href="{{ url_for('reports') }}?class_id={{ class.id }}" 
+                           class="btn btn-secondary btn-sm">View Reports</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if not classes %}
+    <div class="alert alert-info">
+        No classes assigned to you yet. Please contact the administrator.
+    </div>
+    {% endif %}
+
+    <hr style="margin: 30px 0; border-color: #e5e7eb;">
+
+    <h3>Add New Student</h3>
+    <p style="color: #6b7280; margin-bottom: 10px;">
+        Students will log in using their <strong>name</strong> as username and the common password <code>student123</code>.
+    </p>
+
+    <form method="POST" action="{{ url_for('add_student') }}" class="form-row">
+        <div class="form-group">
+            <label for="name">Student Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="roll_number">Roll Number</label>
+            <input type="text" class="form-control" id="roll_number" name="roll_number" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email (optional)</label>
+            <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="class_id">Class</label>
+            <select class="form-control" id="class_id" name="class_id" required>
+                <option value="">Select Class</option>
+                {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }} - {{ class.subject or 'N/A' }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="align-self: flex-end;">
+            <button type="submit" class="btn btn-success">Add Student</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

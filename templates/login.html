@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Student Attendance System{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="header">
+            <h1>Student Attendance System</h1>
+            <p>Simple and Easy Attendance Management</p>
+        </div>
+        
+        <h2>Login</h2>
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="user_type">Login Type:</label>
+                <select name="user_type" id="user_type" class="form-control" required>
+                    <option value="">Select Type</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" class="form-control" required 
+                       autocomplete="username" autocapitalize="none" spellcheck="false">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" class="form-control" required 
+                       autocomplete="current-password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        
+        <div class="demo-credentials" style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
+            <p><strong>Demo Credentials:</strong></p>
+            <p>Teacher: teacher1 / password123</p>
+            <p>Student: use the student <strong>name</strong> (e.g., <em>Alice Johnson</em>) and password <code>student123</code></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

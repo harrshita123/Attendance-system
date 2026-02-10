@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Mark Attendance - {{ class_info.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <h2>Mark Attendance</h2>
+            <p>{{ class_info.name }} - {{ class_info.subject or 'N/A' }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+    
+    <div class="attendance-form">
+        <form method="GET" class="form-row">
+            <div class="form-group">
+                <label for="date">Select Date:</label>
+                <input type="date" name="date" id="date" class="form-control" 
+                       value="{{ selected_date }}" onchange="this.form.submit()">
+            </div>
+        </form>
+        
+        <p style="margin-top: 10px; color: #6b7280;">
+            <strong>Date:</strong> {{ selected_date }} | 
+            <strong>Total Students:</strong> {{ students|length }}
+        </p>
+    </div>
+    
+    <form id="attendanceForm" method="POST" action="{{ url_for('save_attendance') }}">
+        <input type="hidden" name="class_id" value="{{ class_info.id }}">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+        
+        <div class="attendance-grid">
+            {% for student in students %}
+            <div class="student-card">
+                <div class="student-info">
+                    <div>
+                        <div class="student-name">{{ student.name }}</div>
+                        <div class="student-roll">{{ student.roll_number }}</div>
+                    </div>
+                </div>
+                
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" 
+                               name="student_{{ student.id }}" 
+                               value="present" 
+                               id="present_{{ student.id }}"
+                               {% if existing_attendance.get(student.id) == 'present' %}checked{% endif %}>
+                        <label for="present_{{ student.id }}" class="status-present">Present</label>
+                    </div>
+                    
+                    <div class="radio-option">
+                        <input type="radio" 
+                               name="student_{{ student.id }}" 
+                               value="absent" 
+                               id="absent_{{ student.id }}"
+                               {% if existing_attendance.get(student.id) == 'absent' %}checked{% endif %}>
+                        <label for="absent_{{ student.id }}" class="status-absent">Absent</label>
+                    </div>
+                    
+                    <div class="radio-option">
+                        <input type="radio" 
+                               name="student_{{ student.id }}" 
+                               value="late" 
+                               id="late_{{ student.id }}"
+                               {% if existing_attendance.get(student.id) == 'late' %}checked{% endif %}>
+                        <label for="late_{{ student.id }}" class="status-late">Late</label>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if students %}
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="button" id="saveAttendance" class="btn btn-success btn-lg">
+                Save Attendance
+            </button>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No students found in this class.
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<div id="saveIndicator" style="display: none;">
+    You have unsaved changes
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-save functionality
+let saveTimeout;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('input[type="radio"]');
+    
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            clearTimeout(saveTimeout);
+            document.getElementById('saveIndicator').style.display = 'block';
+            
+            // Auto-save after 2 seconds of inactivity
+            saveTimeout = setTimeout(function() {
+                autoSave();
+            }, 2000);
+        });
+    });
+});
+
+function autoSave() {
+    const form = document.getElementById('attendanceForm');
+    const formData = new FormData(form);
+    
+    fetch('{{ url_for("save_attendance") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Attendance auto-saved successfully!');
+            document.getElementById('saveIndicator').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Auto-save error:', error);
+    });
+}
+</script>
+{% endblock %}

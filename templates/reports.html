@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Reports{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <h2>Attendance Reports</h2>
+            <p>Monthly and Subject-wise Reports</p>
+        </div>
+        <div>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+    
+    <div class="attendance-form">
+        <form method="GET" class="form-row">
+            <div class="form-group">
+                <label for="class_id">Select Class:</label>
+                <select name="class_id" id="class_id" class="form-control" onchange="this.form.submit()">
+                    <option value="">All Classes</option>
+                    {% for class in classes %}
+                    <option value="{{ class.id }}" 
+                            {% if selected_class == class.id|string %}selected{% endif %}>
+                        {{ class.name }} - {{ class.subject or 'N/A' }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="month">Select Month:</label>
+                <input type="month" name="month" id="month" class="form-control" 
+                       value="{{ selected_month }}" onchange="this.form.submit()">
+            </div>
+        </form>
+    </div>
+    
+    {% if selected_class and monthly_report %}
+    <h3>Monthly Attendance Report - {{ selected_month }}</h3>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Student Name</th>
+                    <th>Total Classes</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in monthly_report %}
+                <tr>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.total_classes }}</td>
+                    <td>{{ student.present_classes }}</td>
+                    <td>{{ student.total_classes - student.present_classes }}</td>
+                    <td>{{ student.percentage }}%</td>
+                    <td>
+                        {% if student.percentage >= 75 %}
+                            <span class="status-present">Good</span>
+                        {% elif student.percentage >= 60 %}
+                            <span class="status-late">Average</span>
+                        {% else %}
+                            <span class="status-absent">Poor</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="stats-grid" style="margin-top: 30px;">
+        <div class="stat-card">
+            <h3>{{ monthly_report|length }}</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ monthly_report|selectattr('percentage', 'ge', 75)|list|length }}</h3>
+            <p>Good Attendance (≥75%)</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ monthly_report|selectattr('percentage', 'ge', 60)|selectattr('percentage', 'lt', 75)|list|length }}</h3>
+            <p>Average Attendance (60-74%)</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ monthly_report|selectattr('percentage', 'lt', 60)|list|length }}</h3>
+            <p>Poor Attendance (<60%)</p>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="alert alert-info">
+        Please select a class and month to view the attendance report.
+    </div>
+    {% endif %}
+    
+    {% if selected_class and not monthly_report %}
+    <div class="alert alert-warning">
+        No attendance records found for the selected period.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
