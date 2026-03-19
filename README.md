@@ -5,25 +5,25 @@ A simple and modern Student Attendance Management System built with Flask, SQLit
 ## Features
 
 ### Teacher Features
-- ✓ Login system for teachers
-- ✓ View dashboard with attendance summary
-- ✓ Mark attendance for any date
-- ✓ View monthly and subject-wise reports
-- ✓ Automatic attendance percentage calculation
+-  Login system for teachers
+-  View dashboard with attendance summary
+-  Mark attendance for any date
+-  View monthly and subject-wise reports
+-  Automatic attendance percentage calculation
 
 ### Student Features
-- ✓ Login system for students
-- ✓ View personal attendance dashboard
-- ✓ Check attendance statistics
-- ✓ View recent attendance history
+-  Login system for students
+-  View personal attendance dashboard
+-  Check attendance statistics
+-  View recent attendance history
 
 ### System Features
-- ✓ Clean and modern UI
-- ✓ Responsive design
-- ✓ Form validation
-- ✓ Auto-save functionality
-- ✓ SQLite database
-- ✓ Session management
+-  Clean and modern UI
+-  Responsive design
+-  Form validation
+-  Auto-save functionality
+-  SQLite database
+-  Session management
 
 ## Installation
 
