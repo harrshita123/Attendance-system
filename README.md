@@ -9,7 +9,7 @@ A simple and modern Student Attendance Management System built with Flask, SQLit
 -  View dashboard with attendance summary
 -  Mark attendance for any date
 -  View monthly and subject-wise reports
-
+-  Automatic attendance percentage calculation
 
 ### Student Features
 -  Login system for students
