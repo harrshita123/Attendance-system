@@ -1,4 +1,4 @@
-
+# Student Attendance System
 
 A simple and modern Student Attendance Management System built with Flask, SQLite, and Bootstrap.
 
