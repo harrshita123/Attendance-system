@@ -95,7 +95,7 @@ attendance-system/
 3. Check your attendance percentage
 4. View recent attendance history
 
-## Database
+
 
 The system uses SQLite database with the following tables:
 - `teachers` - Teacher information
