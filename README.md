@@ -132,6 +132,6 @@ To modify or extend the system:
 ### Reset Database
 Delete `database/attendance.db` and restart the app to recreate with sample data.
 
-## License
+
 
 This project is open source and available under the MIT License.
